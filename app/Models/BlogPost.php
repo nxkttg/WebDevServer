@@ -11,6 +11,8 @@ class BlogPost extends Model
     use HasFactory;
     use SoftDeletes;
 
+    const UNKNOWN_USER = 1;
+
     protected $fillable = [
         'title',
         'slug',
@@ -20,7 +22,6 @@ class BlogPost extends Model
         'content_html',
         'is_published',
         'published_at',
-        'user_id',
     ];
 
     /**
