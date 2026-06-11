@@ -7,6 +7,8 @@ use App\Http\Requests\BlogPostUpdateRequest;
 use App\Models\BlogPost;
 use App\Repositories\BlogCategoryRepository;
 use App\Repositories\BlogPostRepository;
+use App\Jobs\BlogPostAfterCreateJob;
+use App\Jobs\BlogPostAfterDeleteJob;
 
 class PostController extends BaseController
 {
@@ -35,6 +37,8 @@ class PostController extends BaseController
         $item = (new BlogPost())->create($data);
 
         if ($item) {
+            BlogPostAfterCreateJob::dispatch($item);
+
             return [
                 'success' => true,
                 'message' => 'Успішно збережено',
@@ -82,6 +86,8 @@ class PostController extends BaseController
         $result = BlogPost::destroy($id);
 
         if ($result) {
+            BlogPostAfterDeleteJob::dispatch($id)->delay(20);
+
             return [
                 'success' => true,
                 'message' => 'Успішно видалено',
