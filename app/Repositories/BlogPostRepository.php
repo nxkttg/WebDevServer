@@ -19,8 +19,13 @@ class BlogPostRepository extends CoreRepository
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getAllWithPaginate()
-    {
+    public function getAllWithPaginate(
+        int $perPage = 10,
+        int $page = 1,
+        ?string $search = null,
+        string $sortBy = 'id',
+        string $sortDir = 'desc'
+    ) {
         $columns = [
             'id',
             'title',
@@ -31,18 +36,40 @@ class BlogPostRepository extends CoreRepository
             'category_id',
         ];
 
-        $result = $this->startConditions()
+        $allowedSortColumns = [
+            'id',
+            'title',
+            'published_at',
+            'is_published',
+            'user_id',
+            'category_id',
+        ];
+
+        if (!in_array($sortBy, $allowedSortColumns)) {
+            $sortBy = 'id';
+        }
+
+        $sortDir = strtolower($sortDir) === 'asc' ? 'asc' : 'desc';
+
+        $query = $this->startConditions()
             ->select($columns)
-            ->orderBy('id', 'DESC')
             ->with([
                 'category' => function ($query) {
                     $query->select(['id', 'title']);
                 },
                 'user:id,name',
-            ])
-            ->paginate(25);
+            ]);
 
-        return $result;
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', $search . '%')
+                    ->orWhere('slug', 'like', $search . '%');
+            });
+        }
+
+        return $query
+            ->orderBy($sortBy, $sortDir)
+            ->paginate($perPage, ['*'], 'page', $page);
     }
 
     /**

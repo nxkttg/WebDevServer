@@ -9,6 +9,7 @@ use App\Repositories\BlogCategoryRepository;
 use App\Repositories\BlogPostRepository;
 use App\Jobs\BlogPostAfterCreateJob;
 use App\Jobs\BlogPostAfterDeleteJob;
+use Illuminate\Http\Request;
 
 class PostController extends BaseController
 {
@@ -23,9 +24,15 @@ class PostController extends BaseController
         $this->blogCategoryRepository = $blogCategoryRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $paginator = $this->blogPostRepository->getAllWithPaginate();
+        $paginator = $this->blogPostRepository->getAllWithPaginate(
+            (int) $request->input('per_page', 10),
+            (int) $request->input('page', 1),
+            $request->input('search'),
+            $request->input('sort_by', 'id'),
+            $request->input('sort_dir', 'desc')
+        );
 
         return $paginator;
     }
