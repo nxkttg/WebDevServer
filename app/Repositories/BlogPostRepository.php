@@ -82,4 +82,36 @@ class BlogPostRepository extends CoreRepository
     {
         return $this->startConditions()->find($id);
     }
+
+    /**
+     * Отримати один пост для перегляду.
+     *
+     * @param int $id
+     * @return Model|null
+     */
+    public function getForView($id)
+    {
+        $columns = [
+            'id',
+            'title',
+            'slug',
+            'excerpt',
+            'content_raw',
+            'content_html',
+            'is_published',
+            'published_at',
+            'user_id',
+            'category_id',
+            'created_at',
+            'updated_at',
+        ];
+
+        return $this->startConditions()
+            ->select($columns)
+            ->with([
+                'category:id,title',
+                'user:id,name',
+            ])
+            ->find($id);
+    }
 }
