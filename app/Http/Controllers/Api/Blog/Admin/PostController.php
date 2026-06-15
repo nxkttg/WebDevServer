@@ -10,6 +10,7 @@ use App\Repositories\BlogPostRepository;
 use App\Jobs\BlogPostAfterCreateJob;
 use App\Jobs\BlogPostAfterDeleteJob;
 use Illuminate\Http\Request;
+use App\Http\Resources\Api\Blog\Admin\PostResource;
 
 class PostController extends BaseController
 {
@@ -34,7 +35,7 @@ class PostController extends BaseController
             $request->input('sort_dir', 'desc')
         );
 
-        return $paginator;
+        return PostResource::collection($paginator);
     }
 
     public function store(BlogPostCreateRequest $request)
