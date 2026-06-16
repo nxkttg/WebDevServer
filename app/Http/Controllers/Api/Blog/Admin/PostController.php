@@ -107,4 +107,18 @@ class PostController extends BaseController
             'message' => 'Помилка видалення або запис не знайдено',
         ];
     }
+
+    public function show(string $id)
+    {
+        $item = $this->blogPostRepository->getForView($id);
+
+        if (empty($item)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Пост id=[{$id}] не знайдено",
+            ], 404);
+        }
+
+        return new PostResource($item);
+    }
 }

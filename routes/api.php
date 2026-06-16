@@ -23,11 +23,11 @@ Route::group($groupData, function () {
     $methods = ['index', 'store', 'update'];
 
     Route::apiResource('categories', AdminCategoryController::class)
-        ->only($methods)
+        ->only(['index', 'store', 'show', 'update', 'destroy'])
         ->names('blog.admin.categories');
 
     // BlogPost
     Route::apiResource('posts', AdminPostController::class)
-        ->except(['show'])
+        ->only(['index', 'store', 'show', 'update', 'destroy'])
         ->names('blog.admin.posts');
 });
